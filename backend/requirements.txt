@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+pymongo
+motor
+chromadb
+sentence-transformers
+pymupdf
+python-docx
+langchain
+langchain-community
+langchain-huggingface
+pydantic-settings
+python-dotenv
