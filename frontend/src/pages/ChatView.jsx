@@ -5,10 +5,11 @@ import { getChatHistory, queryDocument, getDocuments } from '../api';
 
 export default function ChatView() {
   const { docId } = useParams();
+  const docIdsArray = docId.split(',');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [doc, setDoc] = useState(null);
+  const [docsList, setDocsList] = useState([]);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -22,8 +23,8 @@ export default function ChatView() {
   const loadDocAndHistory = async () => {
     try {
       const allDocs = await getDocuments();
-      const currentDoc = allDocs.find(d => d.id === docId);
-      if (currentDoc) setDoc(currentDoc);
+      const currentDocs = allDocs.filter(d => docIdsArray.includes(d.id));
+      setDocsList(currentDocs);
 
       const history = await getChatHistory(docId);
       const formattedHistory = [];
@@ -51,7 +52,7 @@ export default function ChatView() {
     setIsLoading(true);
 
     try {
-      const response = await queryDocument(docId, userMsg);
+      const response = await queryDocument(docIdsArray, userMsg);
       setMessages(prev => [...prev, { 
         role: 'ai', 
         content: response.answer, 
@@ -116,12 +117,14 @@ export default function ChatView() {
               <FileText className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900">{doc?.filename || 'Loading...'}</h2>
-              {doc?.status === 'FAILED' ? (
+              <h2 className="text-sm font-bold text-gray-900">
+                {docIdsArray.length > 1 ? `Multiple Documents (${docIdsArray.length})` : (docsList[0]?.filename || 'Loading...')}
+              </h2>
+              {docsList.some(d => d.status === 'FAILED') ? (
                 <div className="flex items-center text-[10px] font-bold text-red-600 mt-0.5 tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5" /> INDEXING FAILED
                 </div>
-              ) : doc?.status === 'INDEXED' ? (
+              ) : docsList.length > 0 && docsList.every(d => d.status === 'INDEXED') ? (
                 <div className="flex items-center text-[10px] font-bold text-green-600 mt-0.5 tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5" /> INDEXED & READY
                 </div>
@@ -205,7 +208,7 @@ export default function ChatView() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask anything about ${doc?.filename || 'this document'}...`}
+              placeholder={docIdsArray.length > 1 ? "Ask anything about selected documents..." : `Ask anything about ${docsList[0]?.filename || 'this document'}...`}
               className="w-full border-none py-3 px-4 focus:ring-0 text-sm outline-none"
               disabled={isLoading}
             />

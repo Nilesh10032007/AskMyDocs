@@ -6,6 +6,7 @@ import { uploadDocument, getDocuments } from '../api';
 
 export default function Dashboard({ onUploadComplete }) {
   const [docs, setDocs] = useState([]);
+  const [selectedDocs, setSelectedDocs] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
@@ -21,6 +22,12 @@ export default function Dashboard({ onUploadComplete }) {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleSelectDoc = (docId) => {
+    setSelectedDocs(prev => 
+      prev.includes(docId) ? prev.filter(id => id !== docId) : [...prev, docId]
+    );
   };
 
   const onDrop = useCallback(async (acceptedFiles) => {
@@ -140,14 +147,22 @@ export default function Dashboard({ onUploadComplete }) {
             <h3 className="text-lg font-bold text-gray-900">Recently Uploaded</h3>
             <p className="text-sm text-gray-500">Live tracking of your document ingestion pipeline</p>
           </div>
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center">
-            VIEW FULL LIBRARY <ArrowRight className="w-4 h-4 ml-1" />
-          </button>
+          <div className="flex items-center space-x-4">
+            {selectedDocs.length > 1 && (
+              <Link to={`/chat/${selectedDocs.join(',')}`} className="bg-[#3730A3] hover:bg-[#312e81] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-all">
+                Chat with Selected ({selectedDocs.length})
+              </Link>
+            )}
+            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center">
+              VIEW FULL LIBRARY <ArrowRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
         </div>
         
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
+              <th className="py-3 px-4 w-12 text-center"></th>
               <th className="py-3 px-6 text-xs font-bold text-gray-400 label-caps">DOCUMENT NAME</th>
               <th className="py-3 px-6 text-xs font-bold text-gray-400 label-caps">DATE ADDED</th>
               <th className="py-3 px-6 text-xs font-bold text-gray-400 label-caps">SIZE</th>
@@ -158,6 +173,15 @@ export default function Dashboard({ onUploadComplete }) {
           <tbody className="divide-y divide-gray-50">
             {docs.map(doc => (
               <tr key={doc.id} className="hover:bg-gray-50/50 transition-colors">
+                <td className="py-4 px-4 text-center">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedDocs.includes(doc.id)}
+                    onChange={() => handleSelectDoc(doc.id)}
+                    disabled={doc.status !== 'INDEXED'}
+                    className="w-4 h-4 text-[#3730A3] rounded border-gray-300 focus:ring-[#3730A3] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </td>
                 <td className="py-4 px-6 flex items-center">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 shrink-0
                     ${doc.filename.endsWith('.pdf') ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'}`}>
@@ -208,7 +232,7 @@ export default function Dashboard({ onUploadComplete }) {
             ))}
             {docs.length === 0 && (
               <tr>
-                <td colSpan="5" className="py-8 text-center text-gray-500 text-sm">
+                <td colSpan="6" className="py-8 text-center text-gray-500 text-sm">
                   No documents uploaded yet.
                 </td>
               </tr>

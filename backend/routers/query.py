@@ -11,7 +11,7 @@ import uuid
 router = APIRouter()
 
 class QueryRequest(BaseModel):
-    doc_id: str
+    doc_ids: list[str]
     question: str
 
 @router.post("/query")
@@ -22,22 +22,28 @@ async def query_document(request: QueryRequest):
         
         # 2. Similarity search in Chroma
         collection = get_chroma_collection()
+        
+        if len(request.doc_ids) == 1:
+            where_clause = {"doc_id": request.doc_ids[0]}
+        else:
+            where_clause = {"doc_id": {"$in": request.doc_ids}}
+            
         results = collection.query(
             query_embeddings=[question_embedding],
-            where={"doc_id": request.doc_id},
-            n_results=4
+            where=where_clause,
+            n_results=4 * max(1, len(request.doc_ids))
         )
         
         # Extract context and sources
         if not results['documents'] or not results['documents'][0]:
-            return {"answer": "No relevant context found in this document.", "sources": []}
+            return {"answer": "No relevant context found in the selected documents.", "sources": []}
             
         context_chunks = results['documents'][0]
         metadatas = results['metadatas'][0]
         
         context_text = "\n\n".join(context_chunks)
         
-        sources = [f"Chunk {m.get('chunk_index', '?')}" for m in metadatas]
+        sources = list(set([f"{m.get('filename', 'Unknown')} (Chunk {m.get('chunk_index', '?')})" for m in metadatas]))
         
         # 3. Call Groq
         llm = ChatGroq(
@@ -60,9 +66,10 @@ async def query_document(request: QueryRequest):
         answer = response.content
         
         # 4. Save to chat history
+        session_id = ",".join(sorted(request.doc_ids))
         chat_msg = {
             "_id": str(uuid.uuid4()),
-            "doc_id": request.doc_id,
+            "session_id": session_id,
             "question": request.question,
             "answer": answer,
             "sources": sources,
@@ -77,9 +84,10 @@ async def query_document(request: QueryRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/chat-history/{doc_id}")
-async def get_chat_history(doc_id: str):
-    history = await chat_history_collection.find({"doc_id": doc_id}).sort("timestamp", 1).to_list(100)
+@router.get("/chat-history/{doc_ids}")
+async def get_chat_history(doc_ids: str):
+    session_id = ",".join(sorted(doc_ids.split(",")))
+    history = await chat_history_collection.find({"session_id": session_id}).sort("timestamp", 1).to_list(100)
     for h in history:
         h["id"] = h.pop("_id")
     return history
