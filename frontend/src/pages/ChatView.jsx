@@ -2,6 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FileText, MoreVertical, Paperclip, Send, BrainCircuit, Activity, Lock, BookOpen, Table, CheckCircle2, Search, User } from 'lucide-react';
 import { getChatHistory, queryDocument, getDocuments } from '../api';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function ChatView() {
   const { docId } = useParams();
@@ -10,6 +15,8 @@ export default function ChatView() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [docsList, setDocsList] = useState([]);
+  const [activePdfUrl, setActivePdfUrl] = useState(null);
+  const [activePage, setActivePage] = useState(1);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -171,11 +178,27 @@ export default function ChatView() {
                   <div className="mt-6 pt-4 border-t border-gray-100">
                     <p className="label-caps text-[10px] font-bold text-gray-400 mb-2 tracking-wider">VERIFIED SOURCES</p>
                     <div className="flex flex-wrap gap-2">
-                      {msg.sources.map((src, i) => (
-                        <span key={i} className="inline-flex items-center px-2.5 py-1 rounded text-[#3730A3] text-xs font-semibold hover:bg-indigo-50 transition-colors border border-transparent hover:border-indigo-100 cursor-pointer">
-                          <BookOpen className="w-3.5 h-3.5 mr-1.5" /> {src}
-                        </span>
-                      ))}
+                      {msg.sources.map((src, i) => {
+                        const isString = typeof src === 'string'; 
+                        const label = isString ? src : `${src.filename} (Page ${src.page})`;
+                        return (
+                          <span 
+                            key={i} 
+                            onClick={() => {
+                              if (!isString && src.doc_id) {
+                                const ext = src.filename.split('.').pop().toLowerCase();
+                                if (ext === 'pdf') {
+                                  setActivePdfUrl(`http://127.0.0.1:8000/api/uploads/${src.doc_id}.${ext}`);
+                                  setActivePage(src.page);
+                                }
+                              }
+                            }}
+                            className="inline-flex items-center px-2.5 py-1 rounded text-[#3730A3] text-xs font-semibold hover:bg-indigo-50 transition-colors border border-transparent hover:border-indigo-100 cursor-pointer shadow-sm bg-white"
+                          >
+                            <BookOpen className="w-3.5 h-3.5 mr-1.5" /> {label}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -227,39 +250,57 @@ export default function ChatView() {
         </div>
       </div>
 
-      {/* Right Sidebar: Document Insights */}
-      <div className="w-80 bg-[#f4f7fb] border-l border-gray-100 flex flex-col shrink-0 overflow-y-auto">
-        <div className="p-8 space-y-8">
-          <div>
-            <h3 className="label-caps font-bold text-gray-400 mb-4 tracking-widest text-xs">DOCUMENT INSIGHTS</h3>
-            <div className="bg-white soft-shadow rounded-xl p-5 border border-gray-50">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-semibold text-gray-700">Complexity Score</span>
-                <span className="bg-[#E0E7FF] text-[#3730A3] text-xs font-bold px-2 py-1 rounded">High</span>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5 mb-4 overflow-hidden">
-                <div className="bg-[#3730A3] h-1.5 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-              <p className="text-xs text-gray-500 leading-relaxed font-medium">
-                This document contains dense financial data and multi-region comparisons.
-              </p>
-            </div>
+      {/* Right Sidebar: Document Insights / PDF Viewer */}
+      <div className="w-[400px] bg-[#f4f7fb] border-l border-gray-100 flex flex-col shrink-0 overflow-y-auto">
+        {activePdfUrl ? (
+          <div className="flex flex-col h-full bg-[#1e293b] p-4 relative overflow-y-auto shadow-inner">
+             <div className="flex justify-between items-center mb-4 sticky top-0 bg-[#1e293b] z-10 py-2 border-b border-gray-700">
+               <span className="text-white text-xs font-bold label-caps flex items-center">
+                 <FileText className="w-4 h-4 mr-2 text-indigo-400" /> DOCUMENT VIEWER
+               </span>
+               <button onClick={() => setActivePdfUrl(null)} className="text-gray-400 hover:text-white text-xs font-bold px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 transition-colors">
+                 CLOSE
+               </button>
+             </div>
+             <div className="flex-1 flex justify-center w-full pb-8">
+               <Document file={activePdfUrl} className="max-w-full drop-shadow-xl">
+                 <Page pageNumber={activePage} width={360} renderTextLayer={true} renderAnnotationLayer={true} />
+               </Document>
+             </div>
           </div>
+        ) : (
+          <div className="p-8 space-y-8">
+            <div>
+              <h3 className="label-caps font-bold text-gray-400 mb-4 tracking-widest text-xs">DOCUMENT INSIGHTS</h3>
+              <div className="bg-white soft-shadow rounded-xl p-5 border border-gray-50">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-semibold text-gray-700">Complexity Score</span>
+                  <span className="bg-[#E0E7FF] text-[#3730A3] text-xs font-bold px-2 py-1 rounded">High</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-1.5 mb-4 overflow-hidden">
+                  <div className="bg-[#3730A3] h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                  This document contains dense financial data and multi-region comparisons.
+                </p>
+              </div>
+            </div>
 
-          <div>
-            <h3 className="label-caps font-bold text-gray-400 mb-4 tracking-widest text-xs">QUICK ACTIONS</h3>
-            <div className="space-y-2">
-              <button className="w-full flex items-center p-3 rounded-lg hover:bg-white text-left transition-colors border border-transparent hover:border-gray-100 group shadow-sm">
-                <FileText className="w-4 h-4 text-[#3730A3] mr-3 shrink-0" />
-                <span className="text-sm font-bold text-gray-700 group-hover:text-[#3730A3]">Generate Executive Summary</span>
-              </button>
-              <button className="w-full flex items-center p-3 rounded-lg hover:bg-white text-left transition-colors border border-transparent hover:border-gray-100 group shadow-sm">
-                <Table className="w-4 h-4 text-[#3730A3] mr-3 shrink-0" />
-                <span className="text-sm font-bold text-gray-700 group-hover:text-[#3730A3]">Extract All Tables to CSV</span>
-              </button>
+            <div>
+              <h3 className="label-caps font-bold text-gray-400 mb-4 tracking-widest text-xs">QUICK ACTIONS</h3>
+              <div className="space-y-2">
+                <button className="w-full flex items-center p-3 rounded-lg hover:bg-white text-left transition-colors border border-transparent hover:border-gray-100 group shadow-sm">
+                  <FileText className="w-4 h-4 text-[#3730A3] mr-3 shrink-0" />
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-[#3730A3]">Generate Executive Summary</span>
+                </button>
+                <button className="w-full flex items-center p-3 rounded-lg hover:bg-white text-left transition-colors border border-transparent hover:border-gray-100 group shadow-sm">
+                  <Table className="w-4 h-4 text-[#3730A3] mr-3 shrink-0" />
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-[#3730A3]">Extract All Tables to CSV</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

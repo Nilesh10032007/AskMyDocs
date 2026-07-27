@@ -43,7 +43,22 @@ async def query_document(request: QueryRequest):
         
         context_text = "\n\n".join(context_chunks)
         
-        sources = list(set([f"{m.get('filename', 'Unknown')} (Chunk {m.get('chunk_index', '?')})" for m in metadatas]))
+        unique_sources = {}
+        for m in metadatas:
+            key = (m.get('filename', 'Unknown'), m.get('page_number', 1), m.get('doc_id'))
+            unique_sources[key] = {
+                "filename": key[0],
+                "page": key[1],
+                "doc_id": key[2]
+            }
+        
+        sources = list(unique_sources.values())
+        
+        # Sort sources for consistency
+        sources = sorted(sources, key=lambda x: (x['filename'], x['page']))
+        
+        # Format string for LLM, but return objects to the frontend
+        formatted_sources = [f"{s['filename']} (Page {s['page']})" for s in sources]
         
         # 3. Call Groq
         llm = ChatGroq(

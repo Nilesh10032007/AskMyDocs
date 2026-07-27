@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from backend.routers import upload, documents, query
 
 app = FastAPI(title="AskMyDocs API")
@@ -12,6 +13,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/api/uploads", StaticFiles(directory="backend/uploads"), name="uploads")
 
 app.include_router(upload.router, prefix="/api")
 app.include_router(documents.router, prefix="/api")

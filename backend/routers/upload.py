@@ -19,6 +19,13 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         # Generate ID
         doc_id = str(uuid.uuid4())
         
+        # Save file to disk
+        import os
+        ext = os.path.splitext(file.filename)[1]
+        file_path = os.path.join("backend", "uploads", f"{doc_id}{ext}")
+        with open(file_path, "wb") as f:
+            f.write(file_bytes)
+        
         # Initial DB entry
         await docs_collection.insert_one({
             "_id": doc_id,

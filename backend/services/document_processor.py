@@ -14,7 +14,7 @@ def get_embedder():
         embedder = SentenceTransformer("all-MiniLM-L6-v2")
     return embedder
 
-async def process_document(doc_id: str, file_name: str, text: str, file_size: int):
+async def process_document(doc_id: str, file_name: str, pages: list, file_size: int):
     try:
         # Update status to processing
         await docs_collection.update_one(
@@ -29,23 +29,41 @@ async def process_document(doc_id: str, file_name: str, text: str, file_size: in
             chunk_overlap=200,
             separators=["\n\n", "\n", " ", ""]
         )
-        chunks = text_splitter.split_text(text)
+        
+        all_chunks = []
+        all_metadatas = []
+        
+        for p in pages:
+            page_num = p["page"]
+            page_text = p["text"].strip()
+            if not page_text:
+                continue
+                
+            chunks = text_splitter.split_text(page_text)
+            for i, chunk in enumerate(chunks):
+                all_chunks.append(chunk)
+                all_metadatas.append({
+                    "doc_id": doc_id, 
+                    "chunk_index": i, 
+                    "page_number": page_num,
+                    "filename": file_name, 
+                    "text": chunk
+                })
 
-        if not chunks:
+        if not all_chunks:
             raise ValueError("No extractable text found in the document. It might be a scanned image or empty.")
 
         # Generate embeddings
-        embeddings = get_embedder().encode(chunks).tolist()
+        embeddings = get_embedder().encode(all_chunks).tolist()
 
         # Store in ChromaDB
         collection = get_chroma_collection()
-        ids = [f"{doc_id}_{i}" for i in range(len(chunks))]
-        metadatas = [{"doc_id": doc_id, "chunk_index": i, "filename": file_name, "text": chunk} for i, chunk in enumerate(chunks)]
+        ids = [f"{doc_id}_{i}" for i in range(len(all_chunks))]
 
         collection.add(
             embeddings=embeddings,
-            documents=chunks,
-            metadatas=metadatas,
+            documents=all_chunks,
+            metadatas=all_metadatas,
             ids=ids
         )
 
