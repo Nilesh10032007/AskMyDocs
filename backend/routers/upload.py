@@ -22,7 +22,9 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         # Save file to disk
         import os
         ext = os.path.splitext(file.filename)[1]
-        file_path = os.path.join("backend", "uploads", f"{doc_id}{ext}")
+        upload_dir = os.path.join("backend", "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, f"{doc_id}{ext}")
         with open(file_path, "wb") as f:
             f.write(file_bytes)
         
