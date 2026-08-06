@@ -9,3 +9,4 @@ python-multipart
 pymupdf
 pydantic-settings
 python-docx
+langchain-text-splitters
