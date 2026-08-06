@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from backend.database import get_chroma_collection, chat_history_collection
 from backend.services.document_processor import get_embedder
 from backend.config import settings
-from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 import datetime
 import uuid
@@ -60,11 +60,11 @@ async def query_document(request: QueryRequest):
         # Format string for LLM, but return objects to the frontend
         formatted_sources = [f"{s['filename']} (Page {s['page']})" for s in sources]
         
-        # 3. Call Groq
-        llm = ChatGroq(
+        # 3. Call Google Gemini
+        llm = ChatGoogleGenerativeAI(
             temperature=0, 
-            groq_api_key=settings.GROQ_API_KEY, 
-            model_name="llama-3.3-70b-versatile"
+            google_api_key=settings.GOOGLE_API_KEY, 
+            model="gemini-1.5-flash"
         )
         
         prompt = ChatPromptTemplate.from_messages([
