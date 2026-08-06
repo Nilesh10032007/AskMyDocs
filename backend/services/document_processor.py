@@ -1,9 +1,11 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from backend.config import settings
 from backend.database import get_chroma_collection, docs_collection
 import uuid
 import datetime
 import traceback
+from backend.config import settings
 
 # Lazy load embeddings model
 embedder = None
@@ -11,7 +13,7 @@ embedder = None
 def get_embedder():
     global embedder
     if embedder is None:
-        embedder = SentenceTransformer("all-MiniLM-L6-v2")
+        embedder = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=settings.GOOGLE_API_KEY)
     return embedder
 
 async def process_document(doc_id: str, file_name: str, pages: list, file_size: int):
@@ -54,7 +56,7 @@ async def process_document(doc_id: str, file_name: str, pages: list, file_size: 
             raise ValueError("No extractable text found in the document. It might be a scanned image or empty.")
 
         # Generate embeddings
-        embeddings = get_embedder().encode(all_chunks).tolist()
+        embeddings = get_embedder().embed_documents(all_chunks)
 
         # Store in ChromaDB
         collection = get_chroma_collection()

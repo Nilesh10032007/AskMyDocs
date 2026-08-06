@@ -18,7 +18,7 @@ class QueryRequest(BaseModel):
 async def query_document(request: QueryRequest):
     # 1. Embed the question
     try:
-        question_embedding = get_embedder().encode([request.question]).tolist()[0]
+        question_embedding = get_embedder().embed_query(request.question)
         
         # 2. Similarity search in Chroma
         collection = get_chroma_collection()

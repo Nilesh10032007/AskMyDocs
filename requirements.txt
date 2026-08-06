@@ -2,7 +2,6 @@
 uvicorn
 motor
 chromadb
-sentence-transformers
 langchain
 langchain-google-genai
 python-multipart
