@@ -1,5 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from backend.config import settings
 from backend.database import get_chroma_collection, docs_collection
 import uuid
@@ -13,7 +13,7 @@ embedder = None
 def get_embedder():
     global embedder
     if embedder is None:
-        embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=settings.GOOGLE_API_KEY)
+        embedder = FastEmbedEmbeddings()
     return embedder
 
 async def process_document(doc_id: str, file_name: str, pages: list, file_size: int):
