@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017"
-    GOOGLE_API_KEY: str
+    GROQ_API_KEY: str
     CHROMA_HOST: str
     CHROMA_API_KEY: str
     CHROMA_TENANT: str
