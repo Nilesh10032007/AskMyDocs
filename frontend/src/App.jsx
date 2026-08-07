@@ -1,9 +1,9 @@
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FileText, Plus, Settings } from 'lucide-react';
+import { FileText, Plus, Settings, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
-import { getDocuments } from './api';
+import { getDocuments, deleteDocument } from './api';
 
 function App() {
   const [docs, setDocs] = useState([]);
@@ -16,6 +16,24 @@ function App() {
       setDocs(data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleDelete = async (e, docId) => {
+    e.preventDefault(); // Prevent navigating to the chat view
+    if (!window.confirm("Are you sure you want to delete this document?")) return;
+    
+    try {
+      await deleteDocument(docId);
+      // If we are currently viewing the deleted document, go to dashboard
+      if (location.pathname === `/chat/${docId}`) {
+        navigate('/');
+      }
+      // Refresh the list
+      fetchDocs();
+    } catch (err) {
+      console.error("Failed to delete document:", err);
+      alert("Failed to delete document");
     }
   };
 
@@ -48,17 +66,25 @@ function App() {
           <div className="px-6 py-2">
             <h2 className="label-caps font-bold text-gray-400 text-xs mb-3">RECENT LIBRARY</h2>
             <div className="space-y-1">
-              {docs.slice(0, 5).map(doc => {
+              {docs.slice(0, 10).map(doc => {
                 const isActive = location.pathname === `/chat/${doc.id}`;
                 return (
-                  <Link 
-                    key={doc.id} 
-                    to={`/chat/${doc.id}`}
-                    className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    <FileText className="w-4 h-4 mr-3 shrink-0" />
-                    <span className="truncate">{doc.filename}</span>
-                  </Link>
+                  <div key={doc.id} className="relative group flex items-center">
+                    <Link 
+                      to={`/chat/${doc.id}`}
+                      className={`flex-1 flex items-center px-3 py-2 text-sm rounded-md transition-colors truncate pr-8 ${isActive ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      <FileText className="w-4 h-4 mr-3 shrink-0" />
+                      <span className="truncate">{doc.filename}</span>
+                    </Link>
+                    <button 
+                      onClick={(e) => handleDelete(e, doc.id)}
+                      className="absolute right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Delete document"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
