@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FileText, Plus, Settings, Trash2 } from 'lucide-react';
+import { FileText, Plus, Settings, Trash2, MoreVertical } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
@@ -7,6 +7,7 @@ import { getDocuments, deleteDocument } from './api';
 
 function App() {
   const [docs, setDocs] = useState([]);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -68,6 +69,7 @@ function App() {
             <div className="space-y-1">
               {docs.slice(0, 10).map(doc => {
                 const isActive = location.pathname === `/chat/${doc.id}`;
+                const isMenuOpen = openMenuId === doc.id;
                 return (
                   <div key={doc.id} className="relative group flex items-center">
                     <Link 
@@ -78,12 +80,27 @@ function App() {
                       <span className="truncate">{doc.filename}</span>
                     </Link>
                     <button 
-                      onClick={(e) => handleDelete(e, doc.id)}
-                      className="absolute right-2 p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Delete document"
+                      onClick={() => setOpenMenuId(isMenuOpen ? null : doc.id)}
+                      className="absolute right-2 p-1 text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Options"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <MoreVertical className="w-4 h-4" />
                     </button>
+                    
+                    {isMenuOpen && (
+                      <div className="absolute right-0 top-8 mt-1 w-32 bg-white border border-gray-100 rounded-md shadow-lg z-50">
+                        <button
+                          onClick={(e) => {
+                            setOpenMenuId(null);
+                            handleDelete(e, doc.id);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
