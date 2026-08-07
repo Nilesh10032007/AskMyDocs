@@ -9,3 +9,5 @@ pymupdf
 pydantic-settings
 python-docx
 langchain-text-splitters
+fastembed
+langchain-community
