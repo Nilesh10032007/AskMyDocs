@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from backend.database import get_chroma_collection, chat_history_collection
 from backend.services.document_processor import get_embedder
 from backend.config import settings
+from backend.auth import get_current_user
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 import datetime
@@ -15,7 +16,7 @@ class QueryRequest(BaseModel):
     question: str
 
 @router.post("/query")
-async def query_document(request: QueryRequest):
+async def query_document(request: QueryRequest, user_id: str = Depends(get_current_user)):
     # 1. Embed the question
     try:
         question_embedding = get_embedder().embed_query(request.question)
@@ -23,10 +24,11 @@ async def query_document(request: QueryRequest):
         # 2. Similarity search in Chroma
         collection = get_chroma_collection()
         
+        where_clause = {"$and": [{"user_id": user_id}]}
         if len(request.doc_ids) == 1:
-            where_clause = {"doc_id": request.doc_ids[0]}
+            where_clause["$and"].append({"doc_id": request.doc_ids[0]})
         else:
-            where_clause = {"doc_id": {"$in": request.doc_ids}}
+            where_clause["$and"].append({"doc_id": {"$in": request.doc_ids}})
             
         results = collection.query(
             query_embeddings=[question_embedding],
@@ -53,12 +55,7 @@ async def query_document(request: QueryRequest):
             }
         
         sources = list(unique_sources.values())
-        
-        # Sort sources for consistency
         sources = sorted(sources, key=lambda x: (x['filename'], x['page']))
-        
-        # Format string for LLM, but return objects to the frontend
-        formatted_sources = [f"{s['filename']} (Page {s['page']})" for s in sources]
         
         # 3. Call Groq
         llm = ChatGroq(
@@ -85,6 +82,7 @@ async def query_document(request: QueryRequest):
         chat_msg = {
             "_id": str(uuid.uuid4()),
             "session_id": session_id,
+            "user_id": user_id,
             "question": request.question,
             "answer": answer,
             "sources": sources,
@@ -100,9 +98,9 @@ async def query_document(request: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/chat-history/{doc_ids}")
-async def get_chat_history(doc_ids: str):
+async def get_chat_history(doc_ids: str, user_id: str = Depends(get_current_user)):
     session_id = ",".join(sorted(doc_ids.split(",")))
-    history = await chat_history_collection.find({"session_id": session_id}).sort("timestamp", 1).to_list(100)
+    history = await chat_history_collection.find({"session_id": session_id, "user_id": user_id}).sort("timestamp", 1).to_list(100)
     for h in history:
         h["id"] = h.pop("_id")
     return history

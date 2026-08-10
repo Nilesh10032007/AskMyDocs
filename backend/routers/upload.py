@@ -1,14 +1,16 @@
-from fastapi import APIRouter, UploadFile, File, BackgroundTasks, HTTPException
+from fastapi import APIRouter, UploadFile, File, BackgroundTasks, HTTPException, Depends
 from backend.services.document_parser import parse_file
 from backend.services.document_processor import process_document
 from backend.database import docs_collection
+from backend.auth import get_current_user
 import uuid
 import datetime
+import os
 
 router = APIRouter()
 
 @router.post("/upload")
-async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = File(...), user_id: str = Depends(get_current_user)):
     try:
         file_bytes = await file.read()
         file_size = len(file_bytes)
@@ -20,10 +22,9 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
         doc_id = str(uuid.uuid4())
         
         # Save file to disk
-        import os
-        ext = os.path.splitext(file.filename)[1]
         upload_dir = os.path.join("backend", "uploads")
         os.makedirs(upload_dir, exist_ok=True)
+        ext = os.path.splitext(file.filename)[1]
         file_path = os.path.join(upload_dir, f"{doc_id}{ext}")
         with open(file_path, "wb") as f:
             f.write(file_bytes)
@@ -34,11 +35,12 @@ async def upload_document(background_tasks: BackgroundTasks, file: UploadFile = 
             "filename": file.filename,
             "size": file_size,
             "status": "UPLOADED",
-            "uploaded_at": datetime.datetime.utcnow()
+            "uploaded_at": datetime.datetime.utcnow(),
+            "user_id": user_id
         })
         
-        # Process in background
-        background_tasks.add_task(process_document, doc_id, file.filename, text, file_size)
+        # Process in background, passing user_id
+        background_tasks.add_task(process_document, doc_id, file.filename, text, file_size, user_id)
         
         return {"doc_id": doc_id, "filename": file.filename, "status": "PROCESSING"}
         

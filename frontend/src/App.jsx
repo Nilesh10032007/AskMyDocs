@@ -1,18 +1,38 @@
-import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FileText, Plus, Settings, Trash2, MoreVertical, Menu, X } from 'lucide-react';
+import { Routes, Route, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { FileText, Plus, Settings, Trash2, MoreVertical, Menu, X, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
+import Auth from './pages/Auth';
 import { getDocuments, deleteDocument } from './api';
+import { supabase } from './supabaseClient';
 
 function App() {
   const [docs, setDocs] = useState([]);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setIsLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const fetchDocs = async () => {
+    if (!session) return;
     try {
       const data = await getDocuments();
       setDocs(data);
@@ -22,16 +42,14 @@ function App() {
   };
 
   const handleDelete = async (e, docId) => {
-    e.preventDefault(); // Prevent navigating to the chat view
+    e.preventDefault();
     if (!window.confirm("Are you sure you want to delete this document?")) return;
     
     try {
       await deleteDocument(docId);
-      // If we are currently viewing the deleted document, go to dashboard
       if (location.pathname === `/chat/${docId}`) {
         navigate('/');
       }
-      // Refresh the list
       fetchDocs();
     } catch (err) {
       console.error("Failed to delete document:", err);
@@ -40,13 +58,28 @@ function App() {
   };
 
   useEffect(() => {
-    fetchDocs();
-  }, [location]);
+    if (session) {
+      fetchDocs();
+    }
+  }, [location, session]);
 
-  // Close sidebar on mobile when navigating
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [location.pathname]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
+
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center bg-[#f4f7fb]">Loading...</div>;
+  }
+
+  // If not logged in and not on auth page, redirect to auth
+  if (!session) {
+    return <Auth />;
+  }
 
   return (
     <div className="flex h-screen bg-[#f4f7fb] text-gray-900 font-sans relative overflow-hidden">
@@ -131,9 +164,18 @@ function App() {
           </div>
         </div>
 
-        <div className="p-6">
-          <button className="flex items-center text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium">
+        <div className="p-6 space-y-4">
+          <div className="flex items-center text-xs text-gray-500 font-medium truncate mb-4 border-b border-gray-100 pb-4">
+            <div className="w-6 h-6 rounded-full bg-indigo-100 text-[#3730A3] flex items-center justify-center mr-2 shrink-0">
+              {session.user.email?.charAt(0).toUpperCase()}
+            </div>
+            <span className="truncate">{session.user.email}</span>
+          </div>
+          <button className="flex items-center text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium w-full">
             <Settings className="w-4 h-4 mr-3" /> Settings
+          </button>
+          <button onClick={handleLogout} className="flex items-center text-red-500 hover:text-red-700 transition-colors text-sm font-medium w-full">
+            <LogOut className="w-4 h-4 mr-3" /> Log out
           </button>
         </div>
       </div>

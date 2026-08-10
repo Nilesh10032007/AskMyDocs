@@ -16,12 +16,16 @@ def get_embedder():
         embedder = FastEmbedEmbeddings()
     return embedder
 
-async def process_document(doc_id: str, file_name: str, pages: list, file_size: int):
+async def process_document(doc_id: str, file_name: str, pages: list, file_size: int, user_id: str = None):
     try:
         # Update status to processing
+        update_data = {"status": "PROCESSING", "filename": file_name, "size": file_size, "uploaded_at": datetime.datetime.utcnow()}
+        if user_id:
+            update_data["user_id"] = user_id
+            
         await docs_collection.update_one(
             {"_id": doc_id},
-            {"$set": {"status": "PROCESSING", "filename": file_name, "size": file_size, "uploaded_at": datetime.datetime.utcnow()}},
+            {"$set": update_data},
             upsert=True
         )
 
@@ -44,13 +48,16 @@ async def process_document(doc_id: str, file_name: str, pages: list, file_size: 
             chunks = text_splitter.split_text(page_text)
             for i, chunk in enumerate(chunks):
                 all_chunks.append(chunk)
-                all_metadatas.append({
+                meta = {
                     "doc_id": doc_id, 
                     "chunk_index": i, 
                     "page_number": page_num,
                     "filename": file_name, 
                     "text": chunk
-                })
+                }
+                if user_id:
+                    meta["user_id"] = user_id
+                all_metadatas.append(meta)
 
         if not all_chunks:
             raise ValueError("No extractable text found in the document. It might be a scanned image or empty.")
