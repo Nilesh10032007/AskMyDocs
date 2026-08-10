@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { FileText, Plus, Settings, Trash2, MoreVertical } from 'lucide-react';
+import { FileText, Plus, Settings, Trash2, MoreVertical, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
@@ -8,6 +8,7 @@ import { getDocuments, deleteDocument } from './api';
 function App() {
   const [docs, setDocs] = useState([]);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,17 +43,39 @@ function App() {
     fetchDocs();
   }, [location]);
 
+  // Close sidebar on mobile when navigating
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
   return (
-    <div className="flex h-screen bg-[#f4f7fb] text-gray-900 font-sans">
+    <div className="flex h-screen bg-[#f4f7fb] text-gray-900 font-sans relative overflow-hidden">
+      
+      {/* Mobile Hamburger Button */}
+      <button 
+        onClick={() => setIsSidebarOpen(true)}
+        className="md:hidden absolute top-6 left-6 z-40 p-2 bg-white rounded-lg shadow-md text-gray-700"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+
+      {/* Overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <div className="w-64 bg-white border-r border-gray-100 flex flex-col justify-between shrink-0">
+      <div className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-gray-100 flex flex-col justify-between shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div>
           <div className="p-6 flex items-center justify-between mb-2">
             <h1 className="label-caps font-bold text-gray-700 tracking-widest text-lg">
               DOCUMENTS
             </h1>
-            <button className="text-gray-900 hover:text-black">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <button className="md:hidden text-gray-500 hover:text-black" onClick={() => setIsSidebarOpen(false)}>
+              <X className="w-5 h-5" />
             </button>
           </div>
           <div className="px-6 mb-6">
@@ -116,7 +139,7 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto bg-[#f4f7fb]">
+      <div className="flex-1 overflow-auto bg-[#f4f7fb] w-full">
         <Routes>
           <Route path="/" element={<Dashboard onUploadComplete={fetchDocs} />} />
           <Route path="/chat/:docId" element={<ChatView />} />

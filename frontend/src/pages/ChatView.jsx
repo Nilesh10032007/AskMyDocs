@@ -93,27 +93,27 @@ export default function ChatView() {
       <div className="flex-1 flex flex-col h-full bg-[#f4f7fb] relative">
         
         {/* Top Navbar (Shared style) */}
-        <div className="h-20 flex items-center justify-between px-8 shrink-0">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="bg-[#3730A3] text-white p-2 rounded-lg">
-              <Activity className="w-6 h-6" />
+        <div className="h-20 flex items-center justify-between px-4 md:px-8 shrink-0 mt-12 md:mt-0">
+          <Link to="/" className="flex items-center space-x-2 md:space-x-3">
+            <div className="bg-[#3730A3] text-white p-1.5 md:p-2 rounded-lg">
+              <Activity className="w-5 h-5 md:w-6 md:h-6" />
             </div>
-            <span className="text-xl font-bold text-gray-900">DocuMind AI</span>
+            <span className="text-lg md:text-xl font-bold text-gray-900 hidden sm:block">DocuMind AI</span>
           </Link>
           
-          <div className="flex-1 max-w-md mx-8">
+          <div className="flex-1 max-w-md mx-2 md:mx-8">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input 
                 type="text" 
                 placeholder="Search docs..." 
-                className="w-full pl-10 pr-4 py-2 bg-[#EBF1FF] border-none rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-[#EBF1FF] border-none rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-xs md:text-sm"
               />
             </div>
           </div>
 
-          <div className="w-10 h-10 bg-[#3730A3] rounded-full flex items-center justify-center text-white shrink-0">
-            <User className="w-5 h-5" />
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-[#3730A3] rounded-full flex items-center justify-center text-white shrink-0">
+            <User className="w-4 h-4 md:w-5 md:h-5" />
           </div>
         </div>
 
@@ -251,7 +251,7 @@ export default function ChatView() {
       </div>
 
       {/* Right Sidebar: Document Insights / PDF Viewer */}
-      <div className="w-[400px] bg-[#f4f7fb] border-l border-gray-100 flex flex-col shrink-0 overflow-y-auto">
+      <div className="hidden lg:flex w-[400px] bg-[#f4f7fb] border-l border-gray-100 flex-col shrink-0 overflow-y-auto">
         {activePdfUrl ? (
           <div className="flex flex-col h-full bg-[#1e293b] p-4 relative overflow-y-auto shadow-inner">
              <div className="flex justify-between items-center mb-4 sticky top-0 bg-[#1e293b] z-10 py-2 border-b border-gray-700">
