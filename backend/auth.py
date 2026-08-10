@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 security = HTTPBearer()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ydvwwzmddodhkwtldvru.supabase.co")
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ydvwwzmddodhkwtdvru.supabase.co")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "sb_publishable_6OvlwqZptEzAr4PgXu69qw_lr_4mEDF")
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Security(security)):
