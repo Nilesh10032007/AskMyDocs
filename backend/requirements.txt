@@ -12,3 +12,4 @@ langchain-community
 pydantic-settings
 python-dotenv
 google-auth
+langchain-groq
