@@ -5,7 +5,6 @@ import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
 import Auth from './pages/Auth';
 import { getDocuments, deleteDocument } from './api';
-import { supabase } from './supabaseClient';
 
 function App() {
   const [docs, setDocs] = useState([]);
@@ -16,19 +15,19 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const userStr = localStorage.getItem('user');
+    if (token && userStr) {
+      setSession({ user: JSON.parse(userStr) });
+    } else {
+      setSession(null);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setIsLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    checkAuth();
   }, []);
 
   const fetchDocs = async () => {
@@ -67,8 +66,10 @@ function App() {
     setIsSidebarOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    setSession(null);
     navigate('/');
   };
 
@@ -78,7 +79,7 @@ function App() {
 
   // If not logged in and not on auth page, redirect to auth
   if (!session) {
-    return <Auth />;
+    return <Auth onLoginSuccess={checkAuth} />;
   }
 
   return (
@@ -166,10 +167,14 @@ function App() {
 
         <div className="p-6 space-y-4">
           <div className="flex items-center text-xs text-gray-500 font-medium truncate mb-4 border-b border-gray-100 pb-4">
-            <div className="w-6 h-6 rounded-full bg-indigo-100 text-[#3730A3] flex items-center justify-center mr-2 shrink-0">
-              {session.user.email?.charAt(0).toUpperCase()}
-            </div>
-            <span className="truncate">{session.user.email}</span>
+            {session.user.picture ? (
+               <img src={session.user.picture} alt="Profile" className="w-6 h-6 rounded-full mr-2 shrink-0" />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-indigo-100 text-[#3730A3] flex items-center justify-center mr-2 shrink-0">
+                {session.user.email?.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="truncate">{session.user.name || session.user.email}</span>
           </div>
           <button className="flex items-center text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium w-full">
             <Settings className="w-4 h-4 mr-3" /> Settings

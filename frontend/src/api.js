@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { supabase } from './supabaseClient';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://askmydocs-38au.onrender.com/api';
 
@@ -8,11 +7,13 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`;
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 export const uploadDocument = async (file, onUploadProgress) => {
