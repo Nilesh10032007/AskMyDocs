@@ -1,15 +1,16 @@
 import { Routes, Route, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { FileText, Plus, Settings, Trash2, MoreVertical, Menu, X, LogOut } from 'lucide-react';
+import { FileText, Plus, Settings, Trash2, MoreVertical, Menu, X, LogOut, Home, Folder, Search, Settings as SettingsIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import ChatView from './pages/ChatView';
 import Auth from './pages/Auth';
+import Library from './pages/Library';
+import SettingsPage from './pages/Settings';
 import { getDocuments, deleteDocument } from './api';
 
 function App() {
   const [docs, setDocs] = useState([]);
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -62,10 +63,6 @@ function App() {
     }
   }, [location, session]);
 
-  useEffect(() => {
-    setIsSidebarOpen(false);
-  }, [location.pathname]);
-
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
@@ -82,35 +79,21 @@ function App() {
     return <Auth onLoginSuccess={checkAuth} />;
   }
 
+  const isTabActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
   return (
-    <div className="flex h-screen bg-[#f4f7fb] text-gray-900 font-sans relative overflow-hidden">
+    <div className="flex h-screen bg-[#f4f7fb] text-gray-900 font-sans relative overflow-hidden pb-16 md:pb-0">
       
-      {/* Mobile Hamburger Button */}
-      <button 
-        onClick={() => setIsSidebarOpen(true)}
-        className="md:hidden absolute top-6 left-6 z-40 p-2 bg-white rounded-lg shadow-md text-gray-700"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
-
-      {/* Overlay for mobile sidebar */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Left Sidebar */}
-      <div className={`fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-gray-100 flex flex-col justify-between shrink-0 z-50 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      {/* Left Sidebar (Desktop Only) */}
+      <div className="hidden md:flex w-64 bg-white border-r border-gray-100 flex-col justify-between shrink-0 z-50">
         <div>
           <div className="p-6 flex items-center justify-between mb-2">
             <h1 className="label-caps font-bold text-gray-700 tracking-widest text-lg">
               DOCUMENTS
             </h1>
-            <button className="md:hidden text-gray-500 hover:text-black" onClick={() => setIsSidebarOpen(false)}>
-              <X className="w-5 h-5" />
-            </button>
           </div>
           <div className="px-6 mb-6">
             <button 
@@ -176,7 +159,7 @@ function App() {
             )}
             <span className="truncate">{session.user.name || session.user.email}</span>
           </div>
-          <button className="flex items-center text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium w-full">
+          <button onClick={() => navigate('/settings')} className="flex items-center text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium w-full">
             <Settings className="w-4 h-4 mr-3" /> Settings
           </button>
           <button onClick={handleLogout} className="flex items-center text-red-500 hover:text-red-700 transition-colors text-sm font-medium w-full">
@@ -189,8 +172,43 @@ function App() {
       <div className="flex-1 overflow-auto bg-[#f4f7fb] w-full">
         <Routes>
           <Route path="/" element={<Dashboard onUploadComplete={fetchDocs} />} />
-          <Route path="/chat/:docId" element={<ChatView />} />
+          <Route path="/library" element={<Library docs={docs} fetchDocs={fetchDocs} handleDelete={handleDelete} />} />
+          <Route path="/settings" element={<SettingsPage session={session} handleLogout={handleLogout} />} />
+          <Route path="/chat" element={<ChatView docs={docs} />} />
+          <Route path="/chat/:docId" element={<ChatView docs={docs} />} />
         </Routes>
+      </div>
+
+      {/* Bottom Tab Bar (Mobile Only) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex items-center justify-around px-4 z-50">
+        <Link 
+          to="/" 
+          className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/') ? 'text-[#3730A3]' : 'text-gray-400'}`}
+        >
+          <Home className="w-5 h-5 mb-1" />
+          <span>Dashboard</span>
+        </Link>
+        <Link 
+          to="/library" 
+          className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/library') ? 'text-[#3730A3]' : 'text-gray-400'}`}
+        >
+          <Folder className="w-5 h-5 mb-1" />
+          <span>Library</span>
+        </Link>
+        <Link 
+          to="/chat" 
+          className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/chat') ? 'text-[#3730A3]' : 'text-gray-400'}`}
+        >
+          <Search className="w-5 h-5 mb-1" />
+          <span>Search</span>
+        </Link>
+        <Link 
+          to="/settings" 
+          className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/settings') ? 'text-[#3730A3]' : 'text-gray-400'}`}
+        >
+          <SettingsIcon className="w-5 h-5 mb-1" />
+          <span>Settings</span>
+        </Link>
       </div>
     </div>
   );
