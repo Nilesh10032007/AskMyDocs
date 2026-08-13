@@ -63,9 +63,9 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
   };
 
   const getBadgeColor = (filename) => {
-    if (filename.toLowerCase().includes('financial')) return 'bg-blue-50 text-blue-600';
-    if (filename.toLowerCase().includes('asset') || filename.toLowerCase().endsWith('.png')) return 'bg-purple-50 text-purple-600';
-    return 'bg-slate-50 text-slate-600';
+    if (filename.toLowerCase().includes('financial')) return 'bg-blue-500/20 text-blue-400';
+    if (filename.toLowerCase().includes('asset') || filename.toLowerCase().endsWith('.png')) return 'bg-purple-500/20 text-purple-400';
+    return 'bg-slate-500/20 text-slate-400';
   };
   
   const getBadgeText = (filename) => {
@@ -162,7 +162,7 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
         <div className="w-64 shrink-0 flex flex-col space-y-8">
           <button 
             onClick={triggerUpload}
-            className="w-full bg-[#1c1a53] hover:bg-[#14123b] text-white py-3.5 rounded-xl font-bold flex items-center justify-center shadow-lg transition-colors"
+            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center shadow-lg shadow-indigo-500/20 transition-colors"
           >
             <UploadCloud className="w-5 h-5 mr-2" />
             Upload Files
@@ -182,15 +182,15 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
                   onClick={() => setActiveFilter(filter.name)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                     activeFilter === filter.name 
-                      ? 'bg-indigo-50/80 text-[#3730A3] font-bold' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium'
+                      ? 'bg-indigo-500/20 text-indigo-400 font-bold border border-indigo-500/20' 
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white font-medium'
                   }`}
                 >
                   <div className="flex items-center text-sm">
-                    <filter.icon className={`w-4 h-4 mr-3 ${activeFilter === filter.name ? 'text-[#3730A3]' : 'text-gray-400'}`} />
+                    <filter.icon className={`w-4 h-4 mr-3 ${activeFilter === filter.name ? 'text-indigo-400' : 'text-gray-500'}`} />
                     {filter.name}
                   </div>
-                  <span className={`text-xs ${activeFilter === filter.name ? 'text-[#3730A3]' : 'text-gray-400'}`}>{filter.count}</span>
+                  <span className={`text-xs ${activeFilter === filter.name ? 'text-indigo-400' : 'text-gray-500'}`}>{filter.count}</span>
                 </button>
               ))}
             </div>
@@ -199,12 +199,12 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
           <div>
             <div className="flex items-center justify-between px-2 mb-3">
               <h4 className="text-[10px] font-bold text-gray-400 label-caps">Collections</h4>
-              <Plus className="w-3 h-3 text-gray-400 cursor-pointer hover:text-gray-700" />
+              <Plus className="w-3 h-3 text-gray-500 cursor-pointer hover:text-white" />
             </div>
             <div className="space-y-1">
               {['Q4 Reports', 'Marketing Assets', 'Legal Drafts'].map(col => (
-                <button key={col} className="w-full flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl font-medium transition-all">
-                  <FolderIcon className="w-4 h-4 mr-3 text-gray-400" />
+                <button key={col} className="w-full flex items-center px-3 py-2 text-sm text-gray-400 hover:bg-white/5 hover:text-white rounded-xl font-medium transition-all">
+                  <FolderIcon className="w-4 h-4 mr-3 text-gray-500" />
                   {col}
                 </button>
               ))}
@@ -212,15 +212,15 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
           </div>
 
           <div className="mt-auto pt-8">
-            <div className="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100/50">
+            <div className="bg-[#151821] rounded-2xl p-5 border border-white/5">
               <div className="flex items-center justify-between mb-4">
-                <div className="w-8 h-8 rounded-full border-2 border-[#3730A3] border-t-transparent animate-spin"></div>
+                <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin"></div>
               </div>
-              <h4 className="font-bold text-gray-900 mb-1">Storage Status</h4>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2 mt-4">
-                <div className="bg-[#3730A3] h-1.5 rounded-full" style={{ width: '75%' }}></div>
+              <h4 className="font-bold text-white mb-1">Storage Status</h4>
+              <div className="w-full bg-white/10 rounded-full h-1.5 mb-2 mt-4">
+                <div className="bg-indigo-500 h-1.5 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.5)]" style={{ width: '75%' }}></div>
               </div>
-              <p className="text-xs font-semibold text-gray-500">15GB of 20GB used</p>
+              <p className="text-xs font-semibold text-gray-400">15GB of 20GB used</p>
             </div>
           </div>
         </div>
@@ -230,28 +230,28 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
           
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-serif-heading font-bold text-gray-900">{activeFilter}</h2>
-              <p className="text-gray-500 mt-1 text-sm">Manage and organize your structured intelligence.</p>
+              <h2 className="text-3xl font-serif-heading font-bold text-white">{activeFilter}</h2>
+              <p className="text-gray-400 mt-1 text-sm">Manage and organize your structured intelligence.</p>
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="flex bg-gray-100 p-1 rounded-lg">
+              <div className="flex bg-[#151821] border border-white/5 p-1 rounded-lg">
                 <button 
                   onClick={() => setViewMode('grid')}
-                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-[#232836] shadow-sm text-white' : 'text-gray-500 hover:text-gray-300'}`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => setViewMode('list')}
-                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-[#232836] shadow-sm text-white' : 'text-gray-500 hover:text-gray-300'}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
               </div>
               
-              <button className="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50">
-                <Filter className="w-4 h-4 mr-2 text-gray-400" /> Date Modified
+              <button className="flex items-center px-4 py-2 bg-[#151821] border border-white/5 rounded-lg text-sm font-bold text-gray-300 hover:bg-white/5 transition-colors">
+                <Filter className="w-4 h-4 mr-2 text-gray-500" /> Date Modified
               </button>
             </div>
           </div>
@@ -265,26 +265,26 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
               
               if (viewMode === 'grid') {
                 return (
-                  <div key={doc.id} className="bg-white rounded-3xl p-5 soft-shadow border border-gray-100 hover:border-indigo-200 transition-all group relative flex flex-col h-64 cursor-pointer">
+                  <div key={doc.id} className="bg-[#151821] rounded-3xl p-5 soft-shadow border border-white/5 hover:border-indigo-500/50 hover:bg-white/5 transition-all group relative flex flex-col h-64 cursor-pointer">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                         {getFileIcon(doc.filename)}
                       </div>
-                      <button onClick={(e) => { e.preventDefault(); setOpenMenuId(isMenuOpen ? null : doc.id); }} className="p-1 text-gray-300 hover:text-gray-600 rounded">
+                      <button onClick={(e) => { e.preventDefault(); setOpenMenuId(isMenuOpen ? null : doc.id); }} className="p-1 text-gray-500 hover:text-gray-300 rounded">
                         <MoreVertical className="w-5 h-5" />
                       </button>
                     </div>
                     
                     {isMenuOpen && (
-                      <div className="absolute right-4 top-12 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 py-1">
-                        <button onClick={(e) => { e.preventDefault(); setOpenMenuId(null); handleDelete(e, doc.id); }} className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center">
+                      <div className="absolute right-4 top-12 w-32 bg-[#1a1d27] border border-white/10 rounded-lg shadow-xl z-50 py-1">
+                        <button onClick={(e) => { e.preventDefault(); setOpenMenuId(null); handleDelete(e, doc.id); }} className="w-full text-left px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center">
                           <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
                         </button>
                       </div>
                     )}
 
                     <Link to={`/chat/${doc.id}`} className="flex-1 flex flex-col">
-                      <h3 className="font-bold text-gray-900 text-lg leading-tight mb-2 line-clamp-2">{doc.filename}</h3>
+                      <h3 className="font-bold text-gray-100 text-lg leading-tight mb-2 line-clamp-2">{doc.filename}</h3>
                       <p className="text-xs text-gray-500 line-clamp-2 mb-4 flex-1">
                         Initial document analysis and structured data extraction from the source file.
                       </p>
@@ -293,7 +293,7 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${getBadgeColor(doc.filename)}`}>
                           {getBadgeText(doc.filename)}
                         </span>
-                        <div className="text-[10px] font-bold text-gray-400">
+                        <div className="text-[10px] font-bold text-gray-500">
                           {fileSizeMB} MB • {dateStr}
                         </div>
                       </div>
@@ -304,13 +304,13 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
 
               // List View
               return (
-                <div key={doc.id} className="bg-white p-4 rounded-xl border border-gray-100 soft-shadow flex items-center justify-between hover:border-indigo-200 transition-all">
+                <div key={doc.id} className="bg-[#151821] p-4 rounded-xl border border-white/5 soft-shadow flex items-center justify-between hover:border-indigo-500/50 hover:bg-white/5 transition-all">
                   <Link to={`/chat/${doc.id}`} className="flex items-center space-x-4 flex-1 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
                       {getFileIcon(doc.filename)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-gray-900 truncate pr-4">{doc.filename}</p>
+                      <p className="text-sm font-bold text-gray-200 truncate pr-4">{doc.filename}</p>
                       <p className="text-[11px] text-gray-500">Document • Added {dateStr}</p>
                     </div>
                   </Link>
@@ -320,12 +320,12 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
                     </span>
                     <span className="text-sm font-bold text-gray-500 w-16 text-right">{fileSizeMB} MB</span>
                     <div className="relative">
-                      <button onClick={() => setOpenMenuId(isMenuOpen ? null : doc.id)} className="p-1 text-gray-400 hover:text-gray-600">
+                      <button onClick={() => setOpenMenuId(isMenuOpen ? null : doc.id)} className="p-1 text-gray-500 hover:text-gray-300">
                         <MoreVertical className="w-5 h-5" />
                       </button>
                       {isMenuOpen && (
-                        <div className="absolute right-0 top-8 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 py-1">
-                          <button onClick={(e) => { setOpenMenuId(null); handleDelete(e, doc.id); }} className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center">
+                        <div className="absolute right-0 top-8 w-32 bg-[#1a1d27] border border-white/10 rounded-lg shadow-xl z-50 py-1">
+                          <button onClick={(e) => { setOpenMenuId(null); handleDelete(e, doc.id); }} className="w-full text-left px-4 py-2 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center">
                             <Trash2 className="w-3.5 h-3.5 mr-2" /> Delete
                           </button>
                         </div>

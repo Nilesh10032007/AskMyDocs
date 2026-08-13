@@ -8,7 +8,7 @@
     letter-spacing: 0.05em;
   }
   .bg-dot-pattern {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 24px 24px;
   }
   .font-serif-heading {
@@ -19,5 +19,5 @@
 html, body, #root {
   height: 100%;
   overflow: hidden;
-  background-color: #1a1a1a;
+  background-color: #0B0E14;
 }

@@ -109,14 +109,14 @@ function App() {
       </div>
 
       {/* Main App Container */}
-      <div className="flex-1 bg-white md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative">
+      <div className="flex-1 bg-[#151821] md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative border border-white/5">
         
         {/* Left Sidebar (Desktop Only) */}
-        <div className="hidden md:flex w-64 bg-white border-r border-gray-100 flex-col justify-between shrink-0 z-50">
+        <div className="hidden md:flex w-64 bg-[#151821] border-r border-white/5 flex-col justify-between shrink-0 z-50">
           <div>
-            <div className="p-6 flex items-center text-[#3730A3] mb-4">
+            <div className="p-6 flex items-center text-indigo-400 mb-4">
               <FileText className="w-6 h-6 mr-2" />
-              <h1 className="font-serif-heading font-bold text-xl tracking-tight">
+              <h1 className="font-serif-heading font-bold text-xl tracking-tight text-white">
                 Ask My Docs
               </h1>
             </div>
@@ -124,25 +124,25 @@ function App() {
             <nav className="px-4 space-y-1">
               <Link 
                 to="/" 
-                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/') ? 'bg-[#3730A3] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/') ? 'bg-indigo-500/20 text-indigo-300 shadow-sm border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
               >
                 <LayoutDashboard className="w-5 h-5 mr-3" /> Dashboard
               </Link>
               <Link 
                 to="/library" 
-                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/library') ? 'bg-[#3730A3] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/library') ? 'bg-indigo-500/20 text-indigo-300 shadow-sm border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
               >
                 <Folder className="w-5 h-5 mr-3" /> Library
               </Link>
               <Link 
                 to="/chat" 
-                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/chat') ? 'bg-[#3730A3] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/chat') ? 'bg-indigo-500/20 text-indigo-300 shadow-sm border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
               >
                 <Search className="w-5 h-5 mr-3" /> Deep Search
               </Link>
               <Link 
                 to="/settings" 
-                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/settings') ? 'bg-[#3730A3] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                className={`flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isTabActive('/settings') ? 'bg-indigo-500/20 text-indigo-300 shadow-sm border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
               >
                 <SettingsIcon className="w-5 h-5 mr-3" /> Settings
               </Link>
@@ -150,22 +150,22 @@ function App() {
           </div>
 
           <div className="p-6">
-            <div className="bg-[#f8f9fc] rounded-2xl p-3 flex items-center relative group cursor-pointer border border-gray-100 transition-colors hover:bg-gray-50">
+            <div className="bg-[#1a1d27] rounded-2xl p-3 flex items-center relative group cursor-pointer border border-white/5 transition-colors hover:bg-[#232836]">
                {session.user.picture ? (
                  <img src={session.user.picture} alt="Profile" className="w-10 h-10 rounded-full mr-3 shrink-0" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-indigo-100 text-[#3730A3] flex items-center justify-center mr-3 shrink-0 font-bold">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center mr-3 shrink-0 font-bold">
                   {session.user.email?.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-gray-800 truncate">{session.user.name || session.user.email}</div>
-                <div className="text-xs text-gray-500">Pro Plan</div>
+                <div className="text-sm font-bold text-gray-200 truncate">{session.user.name || session.user.email}</div>
+                <div className="text-xs text-indigo-400">Pro Plan</div>
               </div>
 
               {/* Logout Popover on Hover */}
-              <div className="absolute bottom-full left-0 mb-2 w-full bg-white border border-gray-100 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
-                <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center rounded-xl">
+              <div className="absolute bottom-full left-0 mb-2 w-full bg-[#1a1d27] border border-white/10 rounded-xl shadow-lg shadow-black/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
+                <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 flex items-center rounded-xl">
                   <LogOut className="w-4 h-4 mr-2" /> Log out
                 </button>
               </div>
@@ -174,28 +174,28 @@ function App() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 bg-[#fcfdff] relative">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#0B0E14] relative">
           
           {/* Top Bar (Desktop Only) */}
-          <div className="hidden md:flex items-center justify-between h-20 px-8 border-b border-gray-100 shrink-0 bg-white/50 backdrop-blur-sm z-40">
+          <div className="hidden md:flex items-center justify-between h-20 px-8 border-b border-white/5 shrink-0 bg-[#0B0E14]/80 backdrop-blur-md z-40">
             <div className="relative w-96">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input 
                 type="text" 
                 placeholder="Search your documents..." 
-                className="w-full bg-gray-100/80 border-none rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#3730A3]/20"
+                className="w-full bg-[#151821] border border-white/5 rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-200 placeholder-gray-500"
               />
             </div>
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <button className="p-2 text-gray-400 hover:text-white transition-colors">
                 <Bell className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <button className="p-2 text-gray-400 hover:text-white transition-colors">
                 <HelpCircle className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => navigate('/')}
-                className="bg-[#1c1a53] hover:bg-[#14123b] text-white text-sm font-medium py-2 px-5 rounded-lg flex items-center transition-colors shadow-sm"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2 px-5 rounded-lg flex items-center transition-colors shadow-lg shadow-indigo-500/20"
               >
                  New Document
               </button>
@@ -215,17 +215,17 @@ function App() {
         </div>
 
         {/* Bottom Tab Bar (Mobile Only) */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex items-center justify-around px-4 z-50">
-          <Link to="/" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/') ? 'text-[#3730A3]' : 'text-gray-400'}`}>
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#151821] border-t border-white/5 flex items-center justify-around px-4 z-50">
+          <Link to="/" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/') ? 'text-indigo-400' : 'text-gray-500'}`}>
             <Home className="w-5 h-5 mb-1" /><span>Dashboard</span>
           </Link>
-          <Link to="/library" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/library') ? 'text-[#3730A3]' : 'text-gray-400'}`}>
+          <Link to="/library" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/library') ? 'text-indigo-400' : 'text-gray-500'}`}>
             <Folder className="w-5 h-5 mb-1" /><span>Library</span>
           </Link>
-          <Link to="/chat" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/chat') ? 'text-[#3730A3]' : 'text-gray-400'}`}>
+          <Link to="/chat" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/chat') ? 'text-indigo-400' : 'text-gray-500'}`}>
             <Search className="w-5 h-5 mb-1" /><span>Search</span>
           </Link>
-          <Link to="/settings" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/settings') ? 'text-[#3730A3]' : 'text-gray-400'}`}>
+          <Link to="/settings" className={`flex flex-col items-center justify-center flex-1 py-1 text-xs font-semibold transition-colors ${isTabActive('/settings') ? 'text-indigo-400' : 'text-gray-500'}`}>
             <SettingsIcon className="w-5 h-5 mb-1" /><span>Settings</span>
           </Link>
         </div>

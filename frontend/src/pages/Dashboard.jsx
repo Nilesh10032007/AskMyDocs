@@ -167,11 +167,11 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
         {/* Header Section */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-serif-heading font-bold text-gray-900 tracking-tight">Welcome back, {userFirstName}.</h1>
-            <p className="text-gray-500 mt-1">Here's an overview of your knowledge base.</p>
+            <h1 className="text-3xl font-serif-heading font-bold text-white tracking-tight">Welcome back, {userFirstName}.</h1>
+            <p className="text-gray-400 mt-1">Here's an overview of your knowledge base.</p>
           </div>
-          <div className="bg-indigo-50/50 text-[#3730A3] px-3 py-1.5 rounded-full text-xs font-semibold flex items-center">
-            <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span> System Status: Online
+          <div className="bg-indigo-500/20 text-indigo-300 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center border border-indigo-500/20">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span> System Status: Online
           </div>
         </div>
 
@@ -184,67 +184,67 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
             {/* Upload Area */}
             <div 
               {...getRootProps()} 
-              className={`bg-white rounded-3xl p-8 soft-shadow border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center h-64
-                ${isDragActive ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50/50'}`}
+              className={`bg-[#151821] rounded-3xl p-8 soft-shadow border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center text-center h-64
+                ${isDragActive ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 hover:border-indigo-500/50 hover:bg-white/5'}`}
             >
               <input {...getInputProps()} />
-              <div className="w-14 h-14 bg-indigo-50 text-[#3730A3] rounded-full flex items-center justify-center mb-4">
+              <div className="w-14 h-14 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mb-4">
                 <UploadCloud className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-1">Drop documents here</h3>
-              <p className="text-xs text-gray-500 mb-6">PDF, DOCX, TXT up to 50MB</p>
-              <button className="bg-indigo-50 text-[#3730A3] hover:bg-indigo-100 px-6 py-2 rounded-full text-xs font-bold transition-colors">
+              <h3 className="font-bold text-white mb-1">Drop documents here</h3>
+              <p className="text-xs text-gray-400 mb-6">PDF, DOCX, TXT up to 50MB</p>
+              <button className="bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 px-6 py-2 rounded-full text-xs font-bold transition-colors">
                 {isUploading ? `Uploading ${uploadProgress}%` : 'Browse Files'}
               </button>
             </div>
 
             {/* Quick Actions Grid */}
             <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => navigate('/chat')} className="bg-white rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-indigo-50 text-[#3730A3] rounded-xl flex items-center justify-center"><MessageSquare className="w-5 h-5" /></div>
-                <span className="text-xs font-bold text-gray-700">New Chat</span>
+              <button onClick={() => navigate('/chat')} className="bg-[#151821] border border-white/5 rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-white/5 transition-colors">
+                <div className="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center"><MessageSquare className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-gray-200">New Chat</span>
               </button>
-              <button onClick={() => navigate('/library')} className="bg-white rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center"><FileText className="w-5 h-5" /></div>
-                <span className="text-xs font-bold text-gray-700">Summarize</span>
+              <button onClick={() => navigate('/library')} className="bg-[#151821] border border-white/5 rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-white/5 transition-colors">
+                <div className="w-10 h-10 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center"><FileText className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-gray-200">Summarize</span>
               </button>
-              <button className="bg-white rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><Tag className="w-5 h-5" /></div>
-                <span className="text-xs font-bold text-gray-700">Manage Tags</span>
+              <button className="bg-[#151821] border border-white/5 rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-white/5 transition-colors">
+                <div className="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center"><Tag className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-gray-200">Manage Tags</span>
               </button>
-              <button className="bg-white rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-gray-50 transition-colors">
-                <div className="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center"><FolderIcon className="w-5 h-5" /></div>
-                <span className="text-xs font-bold text-gray-700">Collections</span>
+              <button className="bg-[#151821] border border-white/5 rounded-2xl p-5 soft-shadow flex flex-col items-center justify-center space-y-3 hover:bg-white/5 transition-colors">
+                <div className="w-10 h-10 bg-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center"><FolderIcon className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-gray-200">Collections</span>
               </button>
             </div>
 
             {/* Storage Progress */}
-            <div className="bg-white rounded-2xl p-6 soft-shadow">
+            <div className="bg-[#151821] border border-white/5 rounded-2xl p-6 soft-shadow">
               <div className="flex justify-between text-xs font-bold text-gray-400 label-caps mb-3">
                 <span>Storage</span>
-                <span className="text-[#3730A3]">45%</span>
+                <span className="text-indigo-400">45%</span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-2.5 mb-3">
-                <div className="bg-[#3730A3] h-2.5 rounded-full" style={{ width: '45%' }}></div>
+              <div className="w-full bg-white/10 rounded-full h-2.5 mb-3 overflow-hidden">
+                <div className="bg-indigo-500 h-2.5 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" style={{ width: '45%' }}></div>
               </div>
-              <p className="text-xs text-gray-500">4.5 GB of 10 GB used</p>
+              <p className="text-xs text-gray-400">4.5 GB of 10 GB used</p>
             </div>
 
           </div>
 
           {/* Right Column (Recent Documents) */}
           <div className="col-span-8">
-            <div className="bg-white rounded-3xl soft-shadow overflow-hidden h-full flex flex-col border border-gray-50">
+            <div className="bg-[#151821] rounded-3xl soft-shadow overflow-hidden h-full flex flex-col border border-white/5">
               
               {/* Header */}
-              <div className="p-6 flex items-center justify-between border-b border-gray-50">
-                <div className="flex items-center text-[#3730A3]">
+              <div className="p-6 flex items-center justify-between border-b border-white/5">
+                <div className="flex items-center text-indigo-400">
                   <Clock className="w-5 h-5 mr-2" />
-                  <h3 className="font-serif-heading font-bold text-lg text-gray-900">Recent Documents</h3>
+                  <h3 className="font-serif-heading font-bold text-lg text-white">Recent Documents</h3>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-400">
-                  <button className="p-1 hover:text-gray-600"><Filter className="w-4 h-4" /></button>
-                  <button className="p-1 hover:text-gray-600"><MoreVertical className="w-4 h-4" /></button>
+                <div className="flex items-center space-x-2 text-gray-500">
+                  <button className="p-1 hover:text-white"><Filter className="w-4 h-4" /></button>
+                  <button className="p-1 hover:text-white"><MoreVertical className="w-4 h-4" /></button>
                 </div>
               </div>
 
@@ -252,7 +252,7 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
               <div className="flex-1 overflow-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-gray-50 bg-gray-50/30">
+                    <tr className="border-b border-white/5 bg-white/5">
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Name</th>
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Date</th>
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Size</th>
@@ -260,34 +260,34 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-white/5">
                     {docs.length > 0 ? docs.map(doc => {
                       const fileSizeMB = (doc.size / 1024 / 1024).toFixed(1);
                       const isPdf = doc.filename.endsWith('.pdf');
                       const isDocx = doc.filename.endsWith('.docx');
-                      const iconColor = isPdf ? 'text-red-500' : isDocx ? 'text-[#3730A3]' : 'text-gray-500';
+                      const iconColor = isPdf ? 'text-red-400' : isDocx ? 'text-indigo-400' : 'text-gray-400';
                       
                       return (
-                        <tr key={doc.id} className="hover:bg-gray-50/50 transition-colors group">
+                        <tr key={doc.id} className="hover:bg-white/5 transition-colors group">
                           <td className="py-4 px-6">
                             <Link to={`/chat/${doc.id}`} className="flex items-center">
                               <FileText className={`w-4 h-4 mr-3 shrink-0 ${iconColor}`} />
-                              <span className="text-sm font-medium text-gray-800 truncate max-w-[200px] group-hover:text-[#3730A3] transition-colors">{doc.filename}</span>
+                              <span className="text-sm font-medium text-gray-200 truncate max-w-[200px] group-hover:text-indigo-300 transition-colors">{doc.filename}</span>
                             </Link>
                           </td>
-                          <td className="py-4 px-6 text-sm text-gray-500">
+                          <td className="py-4 px-6 text-sm text-gray-400">
                             {new Date(doc.uploaded_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                           </td>
-                          <td className="py-4 px-6 text-sm text-gray-500">
+                          <td className="py-4 px-6 text-sm text-gray-400">
                             {fileSizeMB} MB
                           </td>
                           <td className="py-4 px-6">
                             {doc.status === 'INDEXED' ? (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-[#3730A3]">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#3730A3] mr-1.5" /> Indexed
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300">
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mr-1.5" /> Indexed
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/10 text-gray-400">
                                 Processing...
                               </span>
                             )}
@@ -295,7 +295,7 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
                           <td className="py-4 px-6 text-right">
                             <button 
                               onClick={(e) => { e.preventDefault(); handleDelete(e, doc.id); }}
-                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                              className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors inline-flex"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -314,8 +314,8 @@ export default function Dashboard({ onUploadComplete, handleDelete }) {
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-gray-50 text-center">
-                <Link to="/library" className="text-xs font-bold text-[#3730A3] hover:underline">
+              <div className="p-4 border-t border-white/5 text-center">
+                <Link to="/library" className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors hover:underline">
                   View All Documents
                 </Link>
               </div>
