@@ -21,5 +21,6 @@ app.include_router(documents.router, prefix="/api")
 app.include_router(query.router, prefix="/api")
 
 @app.get("/")
+@app.head("/")
 def read_root():
     return {"message": "Welcome to AskMyDocs API"}
