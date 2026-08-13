@@ -16,6 +16,18 @@ api.interceptors.request.use(async (config) => {
   return Promise.reject(error);
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const uploadDocument = async (file, onUploadProgress) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -43,5 +55,10 @@ export const queryDocument = async (docIds, question) => {
 
 export const getChatHistory = async (docIds) => {
     const res = await api.get(`/chat-history/${docIds}`);
+    return res.data;
+};
+
+export const getChats = async () => {
+    const res = await api.get(`/chats`);
     return res.data;
 };

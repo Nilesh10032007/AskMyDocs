@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FileText, MoreVertical, Paperclip, Send, BrainCircuit, Activity, BookOpen, ChevronLeft, ChevronDown, Search, X, Download, File } from 'lucide-react';
-import { getChatHistory, queryDocument, getDocuments } from '../api';
+import { getChatHistory, getChats, queryDocument, getDocuments } from '../api';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -16,6 +16,7 @@ export default function ChatView({ docs }) {
   const docIdsArray = activeDocId ? activeDocId.split(',') : [];
 
   const [messages, setMessages] = useState([]);
+  const [chatSessions, setChatSessions] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [docsList, setDocsList] = useState([]);
@@ -32,6 +33,19 @@ export default function ChatView({ docs }) {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    loadChatSessions();
+  }, []);
+
+  const loadChatSessions = async () => {
+    try {
+      const sessions = await getChats();
+      setChatSessions(sessions);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const loadDocAndHistory = async () => {
     try {
@@ -150,38 +164,26 @@ export default function ChatView({ docs }) {
         </div>
         
         <div className="space-y-3 overflow-y-auto pr-2 scrollbar-none flex-1">
-          {/* Active Chat Item */}
-          <div className="bg-indigo-50/80 p-4 rounded-xl border border-indigo-100 cursor-pointer">
-            <div className="flex items-start">
-              <div className="w-8 h-8 bg-[#3730A3] text-white rounded-lg flex items-center justify-center shrink-0 mr-3 mt-0.5">
-                <FileText className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900 text-sm leading-tight">Q3 Financial Analysis</h4>
-                <p className="text-xs text-gray-500 mt-1 line-clamp-1">Summarize the revenue impact of...</p>
-                <p className="text-[10px] font-bold text-gray-400 mt-2">2h ago</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Other Mock Chat Items */}
-          {[
-            { title: 'HR Onboarding Docs', excerpt: 'What is the policy for remote...', time: 'Yesterday', icon: <File className="w-4 h-4 text-gray-500" /> },
-            { title: 'Project Phoenix Specs', excerpt: 'Can you find the API rate limits...', time: 'Oct 12', icon: <FileText className="w-4 h-4 text-gray-500" /> }
-          ].map((item, i) => (
-            <div key={i} className="p-4 rounded-xl border border-transparent hover:bg-gray-50 cursor-pointer transition-colors group">
-              <div className="flex items-start">
-                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 mr-3 mt-0.5 group-hover:bg-gray-200 transition-colors">
-                  {item.icon}
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-700 text-sm leading-tight">{item.title}</h4>
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-1">{item.excerpt}</p>
-                  <p className="text-[10px] font-bold text-gray-400 mt-2">{item.time}</p>
-                </div>
-              </div>
-            </div>
-          ))}
+          {chatSessions.length > 0 ? chatSessions.map((session, i) => {
+             const isActive = activeDocId === session.doc_ids;
+             const timeStr = new Date(session.timestamp).toLocaleDateString();
+             return (
+               <div key={i} onClick={() => navigate(`/chat/${session.doc_ids}`)} className={`p-4 rounded-xl border cursor-pointer transition-colors group ${isActive ? 'bg-indigo-50/80 border-indigo-100' : 'border-transparent hover:bg-gray-50'}`}>
+                 <div className="flex items-start">
+                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mr-3 mt-0.5 ${isActive ? 'bg-[#3730A3] text-white' : 'bg-gray-100 group-hover:bg-gray-200 text-gray-500'}`}>
+                     <FileText className="w-4 h-4" />
+                   </div>
+                   <div className="min-w-0">
+                     <h4 className={`font-bold text-sm leading-tight truncate ${isActive ? 'text-gray-900' : 'text-gray-700'}`}>Session</h4>
+                     <p className="text-xs text-gray-500 mt-1 line-clamp-1">{session.last_message}</p>
+                     <p className="text-[10px] font-bold text-gray-400 mt-2">{timeStr}</p>
+                   </div>
+                 </div>
+               </div>
+             );
+          }) : (
+             <div className="text-sm text-gray-500 text-center mt-4">No recent chats</div>
+          )}
         </div>
       </div>
 
@@ -359,16 +361,6 @@ export default function ChatView({ docs }) {
                  <span className="px-2 py-0.5 bg-indigo-50 text-[#3730A3] rounded text-[9px] font-bold">Confidential</span>
                </div>
              </div>
-          </div>
-
-          {/* Highlighted Excerpt */}
-          <div>
-            <h4 className="text-[10px] font-bold text-gray-400 label-caps mb-3">Relevant Excerpt (Page 14)</h4>
-            <div className="bg-[#fffdf2] p-5 rounded-2xl border border-[#fef3c7] shadow-sm relative">
-              <p className="text-xs text-gray-800 leading-relaxed font-medium">
-                "...driving overall growth. <span className="bg-[#fef08a] px-1 py-0.5 rounded font-bold text-gray-900">The primary driver for the revenue increase in the APAC region was the successful launch of the new enterprise software suite in Japan and South Korea.</span> Early adoption rates exceeded internal projections by 15%, resulting in a <span className="bg-[#fef08a] px-1 py-0.5 rounded font-bold text-gray-900">34% year-over-year growth in enterprise licensing</span> in these markets..."
-              </p>
-            </div>
           </div>
 
           {/* Page Preview */}

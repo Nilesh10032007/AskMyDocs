@@ -335,23 +335,6 @@ export default function Library({ docs, fetchDocs, handleDelete }) {
                 </div>
               );
             })}
-
-            {/* Mock Folder Card for Visuals */}
-            {viewMode === 'grid' && activeFilter === 'All Documents' && (
-              <div className="bg-white rounded-3xl p-5 soft-shadow border border-gray-100 hover:border-indigo-200 transition-all flex flex-col h-64 cursor-pointer">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center mb-6">
-                  <FolderIcon className="w-5 h-5 text-amber-600" />
-                </div>
-                <h3 className="font-bold text-gray-900 text-lg mb-1">Legal Drafts</h3>
-                <p className="text-sm text-gray-500 mb-4">14 items</p>
-                
-                <div className="mt-auto flex items-center">
-                  <span className="text-[10px] font-bold text-red-500 mr-2">PDF</span>
-                  <span className="text-[10px] font-bold text-blue-500 mr-2">DOC</span>
-                  <span className="px-2 py-0.5 bg-gray-100 rounded text-[10px] font-bold text-gray-500">+12</span>
-                </div>
-              </div>
-            )}
             
           </div>
         </div>

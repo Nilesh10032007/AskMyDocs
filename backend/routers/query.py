@@ -104,3 +104,21 @@ async def get_chat_history(doc_ids: str, user_id: str = Depends(get_current_user
     for h in history:
         h["id"] = h.pop("_id")
     return history
+
+@router.get("/chats")
+async def list_chats(user_id: str = Depends(get_current_user)):
+    # Group by session_id and get the latest message for each
+    pipeline = [
+        {"$match": {"user_id": user_id}},
+        {"$sort": {"timestamp": -1}},
+        {"$group": {
+            "_id": "$session_id",
+            "last_message": {"$first": "$question"},
+            "timestamp": {"$first": "$timestamp"},
+            "doc_ids": {"$first": "$session_id"}
+        }},
+        {"$sort": {"timestamp": -1}},
+        {"$limit": 20}
+    ]
+    chats = await chat_history_collection.aggregate(pipeline).to_list(20)
+    return chats
