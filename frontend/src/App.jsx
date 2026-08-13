@@ -100,7 +100,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent bg-dot-pattern md:p-6 text-gray-900 font-sans relative overflow-hidden pb-16 md:pb-0">
+    <div className="flex flex-col h-screen bg-transparent bg-dot-pattern md:p-6 text-gray-900 font-sans relative overflow-hidden pb-16 md:pb-0">
       
       {/* Outer Header (Desktop Only) */}
       <div className="hidden md:flex items-center text-white/90 mb-4 px-2 tracking-wide">
