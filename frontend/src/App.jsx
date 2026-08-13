@@ -205,7 +205,7 @@ function App() {
           {/* Page Content */}
           <div className="flex-1 overflow-auto">
             <Routes>
-              <Route path="/" element={<Dashboard onUploadComplete={fetchDocs} />} />
+              <Route path="/" element={<Dashboard onUploadComplete={fetchDocs} handleDelete={handleDelete} />} />
               <Route path="/library" element={<Library docs={docs} fetchDocs={fetchDocs} handleDelete={handleDelete} />} />
               <Route path="/settings" element={<SettingsPage session={session} handleLogout={handleLogout} />} />
               <Route path="/chat" element={<ChatView docs={docs} />} />

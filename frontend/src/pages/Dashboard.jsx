@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate, Link } from 'react-router-dom';
-import { Cloud, Cpu, Database, Search, User, FileText, UploadCloud, File, FileCode, CheckCircle, Clock, MoreVertical, ArrowRight, Activity, ShieldCheck, Plus, ChevronRight, MessageSquare, Tag, Folder as FolderIcon, Filter } from 'lucide-react';
+import { Cloud, Cpu, Database, Search, User, FileText, UploadCloud, File, FileCode, CheckCircle, Clock, MoreVertical, ArrowRight, Activity, ShieldCheck, Plus, ChevronRight, MessageSquare, Tag, Folder as FolderIcon, Filter, Trash2 } from 'lucide-react';
 import { uploadDocument, getDocuments } from '../api';
 
-export default function Dashboard({ onUploadComplete }) {
+export default function Dashboard({ onUploadComplete, handleDelete }) {
   const [docs, setDocs] = useState([]);
   const [selectedDocs, setSelectedDocs] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -147,7 +147,12 @@ export default function Dashboard({ onUploadComplete }) {
                       <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Today • {fileSizeMB} MB • Indexed</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center space-x-2">
+                    <button onClick={(e) => { e.preventDefault(); handleDelete(e, doc.id); }} className="p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </div>
                 </Link>
               );
             })}
@@ -252,6 +257,7 @@ export default function Dashboard({ onUploadComplete }) {
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Date</th>
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Size</th>
                       <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps">Status</th>
+                      <th className="py-4 px-6 text-[10px] font-bold text-gray-400 label-caps text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -286,11 +292,19 @@ export default function Dashboard({ onUploadComplete }) {
                               </span>
                             )}
                           </td>
+                          <td className="py-4 px-6 text-right">
+                            <button 
+                              onClick={(e) => { e.preventDefault(); handleDelete(e, doc.id); }}
+                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors inline-flex"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
                         </tr>
                       );
                     }) : (
                        <tr>
-                         <td colSpan="4" className="py-12 text-center text-gray-500 text-sm">
+                         <td colSpan="5" className="py-12 text-center text-gray-500 text-sm">
                            No documents found. Upload one to get started!
                          </td>
                        </tr>
